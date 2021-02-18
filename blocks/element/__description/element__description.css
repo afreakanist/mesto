@@ -1,0 +1,14 @@
+.element__description {
+  margin: 25px auto 32px 21px;
+  color: black;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 29px;
+  letter-spacing: 0em;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 11ch;
+  /* margin: 0; align-self: center; */
+}
