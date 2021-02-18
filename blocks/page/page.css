@@ -1,8 +1,15 @@
 .page {
   margin: 0 auto;
+  /* padding: 6vw; */
   max-width: 1280px;
-  min-width: 320px;
+  min-width: 320px; /* 300 */
   background-color: black;
   font-family: 'Inter', Arial, sans-serif;
   color: white;
 }
+
+/* @media screen and (max-width: 1024px) {
+  .page {
+    padding: 0 7vw;
+  }
+} */
