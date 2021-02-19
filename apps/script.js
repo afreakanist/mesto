@@ -12,9 +12,19 @@ function hidePopup() {
 
 const userName = document.querySelector('.profile__name');
 const userBio = document.querySelector('.profile__description');
+const nameField = popup.querySelector('.popup__input_type_name');
+const bioField = popup.querySelector('.popup__input_type_bio');
+nameField.value = userName.textContent;
+bioField.value = userBio.textContent;
 const submitButton = popup.querySelector('.popup__submit-button');
 
 function editProfile() {
+  userName.textContent = nameField.value;
+  userBio.textContent = bioField.value;
+  hidePopup();
+}
+
+/* function editProfile() {
   const nameField = popup.querySelector('.popup__input_type_name');
   const bioField = popup.querySelector('.popup__input_type_bio');
   if (nameField.value !== '') {
@@ -27,7 +37,7 @@ function editProfile() {
   }
 
   hidePopup();
-}
+} */
 
 editButton.addEventListener('click', showPopup);
 hidePopupButton.addEventListener('click', hidePopup);
