@@ -7,12 +7,6 @@
   grid-template-columns: repeat(2, auto) 1fr;
 }
 
-@media screen and (max-width: 920px) {
-  .profile {
-    padding: 0 15px;
-  }
-}
-
 @media screen and (max-width: 768px) {
   .profile {
     grid-template-columns: auto;

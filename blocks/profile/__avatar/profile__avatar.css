@@ -5,11 +5,15 @@
   margin-right: 30px; /* ??? */
 }
 
+@media screen and (max-width: 920px) {
+  .profile__avatar {
+    margin-left: 27px;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .profile__avatar {
     margin: 0;
     justify-self: center;
   }
 }
-
-

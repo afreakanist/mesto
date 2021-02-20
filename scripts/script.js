@@ -1,28 +1,36 @@
-const editButton = document.querySelector('.profile__button_action_edit');
+const editButton = document.querySelector('.profile__edit-button');
 const popup = document.querySelector('.popup');
 const hidePopupButton = popup.querySelector('.popup__close-button');
 
+const userName = document.querySelector('.profile__name');
+const userBio = document.querySelector('.profile__description');
+const form = document.querySelector('.form');
+const nameField = form.querySelector('.popup__input_type_name');
+const bioField = form.querySelector('.popup__input_type_bio');
+// const submitButton = form.querySelector('.popup__submit-button'); //
+
 function showPopup() {
   popup.classList.add('popup_opened');
+  nameField.value = userName.textContent;
+  bioField.value = userBio.textContent;
 };
 
 function hidePopup() {
   popup.classList.remove('popup_opened');
 }
 
-const userName = document.querySelector('.profile__name');
-const userBio = document.querySelector('.profile__description');
-const nameField = popup.querySelector('.popup__input_type_name');
-const bioField = popup.querySelector('.popup__input_type_bio');
-nameField.value = userName.textContent;
-bioField.value = userBio.textContent;
-const submitButton = popup.querySelector('.popup__submit-button');
-
 function editProfile() {
   userName.textContent = nameField.value;
   userBio.textContent = bioField.value;
   hidePopup();
 }
+
+editButton.addEventListener('click', showPopup);
+hidePopupButton.addEventListener('click', hidePopup);
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  editProfile();
+});
 
 /* function editProfile() {
   const nameField = popup.querySelector('.popup__input_type_name');
@@ -38,10 +46,6 @@ function editProfile() {
 
   hidePopup();
 } */
-
-editButton.addEventListener('click', showPopup);
-hidePopupButton.addEventListener('click', hidePopup);
-submitButton.addEventListener('click', editProfile);
 
 /* function togglePopup() {
   popup.classList.toggle('.popup_opened');

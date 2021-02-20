@@ -2,6 +2,4 @@
   background: #FFFFFF;
   display: flex;
   justify-content: space-between;
-  box-sizing: border-box;
-  max-height: 86px;
 }
