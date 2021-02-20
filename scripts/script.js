@@ -19,7 +19,8 @@ function hidePopup() {
   popup.classList.remove('popup_opened');
 }
 
-function editProfile() {
+function editProfile(event) {
+  event.preventDefault();
   userName.textContent = nameField.value;
   userBio.textContent = bioField.value;
   hidePopup();
@@ -27,10 +28,7 @@ function editProfile() {
 
 editButton.addEventListener('click', showPopup);
 hidePopupButton.addEventListener('click', hidePopup);
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  editProfile();
-});
+form.addEventListener('submit', editProfile);
 
 /* function editProfile() {
   const nameField = popup.querySelector('.popup__input_type_name');
