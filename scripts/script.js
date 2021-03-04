@@ -87,6 +87,7 @@ function addCard(cardData) {
   const cardCaption = cardElement.querySelector('.element__description');
   cardPicture.src = cardData.link;
   cardCaption.textContent = cardData.name;
+  cardPicture.alt = cardCaption.textContent;
 
   const cards = document.querySelector('.elements__list');
   cardElement.querySelector('.element__like-button').addEventListener('click', function (event) {
