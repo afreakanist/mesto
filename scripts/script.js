@@ -37,15 +37,20 @@ const userBio = document.querySelector('.profile__description');
 // попапы и кнопки закрытия попапа
 const editPopup = document.querySelector('.popup_edit');
 const addPopup = document.querySelector('.popup_add');
+const picturePopup = document.querySelector('.popup_picture');
 const hidePopupButtons = document.querySelectorAll('.popup__close-button');
 
 // формы и поля ввода
-const editForm = document.querySelector('.edit-form');
-const nameField = document.querySelector('.popup__input_type_name');
-const bioField = document.querySelector('.popup__input_type_bio');
-const addForm = document.querySelector('.add-form');
-const captionField = document.querySelector('.popup__input_type_caption');
-const linkField = document.querySelector('.popup__input_type_link');
+const editForm = editPopup.querySelector('.edit-form');
+const nameField = editPopup.querySelector('.popup__input_type_name');
+const bioField = editPopup.querySelector('.popup__input_type_bio');
+const addForm = addPopup.querySelector('.add-form');
+const captionField = addPopup.querySelector('.popup__input_type_caption');
+const linkField = addPopup.querySelector('.popup__input_type_link');
+
+// развёрнутая картинка с подписью
+const fullPicture = picturePopup.querySelector('.popup__picture');
+const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption');
 
 // функции-обработчики
 // открытие попапа
@@ -70,9 +75,64 @@ function editProfile(event) {
   event.preventDefault();
   userName.textContent = nameField.value;
   userBio.textContent = bioField.value;
-  hidePopup();
+  hidePopup(event);
 }
 
+// генерирование, заполнение и добавление карточки на страницу
+function addCard(cardData) {
+  const cardTemplate = document.querySelector('#element-template').content;
+  const cardElement = cardTemplate.querySelector('.element').cloneNode(true);
+
+  const cardPicture = cardElement.querySelector('.element__picture');
+  const cardCaption = cardElement.querySelector('.element__description');
+  cardPicture.src = cardData.link;
+  cardCaption.textContent = cardData.name;
+
+  const cards = document.querySelector('.elements__list');
+  cardElement.querySelector('.element__like-button').addEventListener('click', function (event) {
+    const target = event.target;
+    target.classList.toggle('element__like-button_active');
+  });
+  cardElement.querySelector('.element__delete-button').addEventListener('click', function (event) {
+    const target = event.target;
+    const parentCard = target.closest('.element');
+    parentCard.remove();
+  });
+  cards.prepend(cardElement);
+
+  cardPicture.addEventListener('click', function () {
+    showPopup(picturePopup);
+
+    fullPicture.src = cardPicture.src;
+    fullPictureCaption.textContent = cardCaption.textContent;
+  });
+}
+
+// добавляем на страницу набор карточек "из коробки"
+initialCards.forEach((cardData) => {
+  addCard(cardData);
+});
+
+// вешаем обработчики событий
+editButton.addEventListener('click', () => showPopup(editPopup));
+editButton.addEventListener('click', renderEditPopup);
+addButton.addEventListener('click', () => showPopup(addPopup));
+hidePopupButtons.forEach((btn) => btn.addEventListener('click', hidePopup));
+editForm.addEventListener('submit', editProfile);
+addForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+  const cardData = {};
+  cardData.name = captionField.value;
+  cardData.link = linkField.value;
+
+  addCard(cardData);
+
+  captionField.value = '';
+  linkField.value = '';
+  hidePopup(event);
+});
+
+/*
 // генерирование "рыбы" карточки
 function generateCard() {
   const cardTemplate = document.querySelector('#element-template').content;
@@ -85,7 +145,6 @@ function collectNewCardData() {
   const cardData = {};
   cardData.name = captionField.value;
   cardData.link = linkField.value;
-  console.log(cardData);
   return cardData;
 }
 
@@ -103,32 +162,6 @@ function addCard(card) {
   cards.prepend(card);
 }
 
-// добавляем на страницу набор карточек "из коробки"
-initialCards.forEach((cardData) => {
-  const card = generateCard();
-  fillInCard(card, cardData);
-  addCard(card);
-});
-
-// вешаем обработчики событий
-editButton.addEventListener('click', () => showPopup(editPopup));
-editButton.addEventListener('click', renderEditPopup);
-addButton.addEventListener('click', () => showPopup(addPopup));
-hidePopupButtons.forEach((btn) => btn.addEventListener('click', hidePopup));
-editForm.addEventListener('submit', editProfile);
-addForm.addEventListener('submit', function(event) {
-  event.preventDefault();
-  const card = generateCard();
-  const cardData = collectNewCardData();
-  fillInCard(card, cardData);
-  addCard(card);
-  hidePopup(event);
-});
-
-// кнопки удаления карточек и лайки (здесь, потому то до этого их как бы не существует)
-const deleteButtons = document.querySelectorAll('.element__delete-button');
-const likeButtons = document.querySelectorAll('.element__like-button');
-
 // удаление карточки
 function deleteCard(event) {
   const target = event.target;
@@ -142,10 +175,8 @@ function likeCard(event) {
   target.classList.toggle('element__like-button_active');
 }
 
-deleteButtons.forEach((btn) => btn.addEventListener('click', deleteCard));
-likeButtons.forEach((btn) => btn.addEventListener('click', likeCard));
-
-/* function editProfile() {
+// редактирование профиля
+ function editProfile() {
   const nameField = popup.querySelector('.popup__input_type_name');
   const bioField = popup.querySelector('.popup__input_type_bio');
   if (nameField.value !== '') {
