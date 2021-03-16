@@ -1,31 +1,3 @@
-// данные для карточек "из коробки"
-const initialCards = [
-  {
-    name: 'Архыз',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg'
-  },
-  {
-    name: 'Челябинская область',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg'
-  },
-  {
-    name: 'Иваново',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg'
-  },
-  {
-    name: 'Камчатка',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg'
-  },
-  {
-    name: 'Холмогорский район',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kholmogorsky-rayon.jpg'
-  },
-  {
-    name: 'Байкал',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg'
-  }
-];
-
 // кнопки редактирования профиля и добавления карточек
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
@@ -35,18 +7,19 @@ const userName = document.querySelector('.profile__name');
 const userBio = document.querySelector('.profile__description');
 
 // попапы и кнопки закрытия попапа
+const popups = document.querySelectorAll('.popup');
 const editPopup = document.querySelector('.popup_edit');
 const addPopup = document.querySelector('.popup_add');
 const picturePopup = document.querySelector('.popup_picture');
 const hidePopupButtons = document.querySelectorAll('.popup__close-button');
 
 // формы и поля ввода
-const editForm = editPopup.querySelector('.edit-form');
-const nameField = editPopup.querySelector('.popup__input_type_name');
-const bioField = editPopup.querySelector('.popup__input_type_bio');
-const addForm = addPopup.querySelector('.add-form');
-const captionField = addPopup.querySelector('.popup__input_type_caption');
-const linkField = addPopup.querySelector('.popup__input_type_link');
+const editForm = editPopup.querySelector('.popup__form_type_edit');
+const nameField = editPopup.querySelector('#popup__input_type_name');
+const bioField = editPopup.querySelector('#popup__input_type_bio');
+const addForm = addPopup.querySelector('.popup__form_type_add');
+const captionField = addPopup.querySelector('#popup__input_type_caption');
+const linkField = addPopup.querySelector('#popup__input_type_link');
 
 // развёрнутая картинка с подписью
 const fullPicture = picturePopup.querySelector('.popup__picture');
@@ -55,6 +28,13 @@ const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption')
 // функции-обработчики
 // открытие попапа
 function showPopup(popupElement) {
+  const childForm = popupElement.querySelector('.popup__form');
+  if (childForm) {
+    childForm.reset();
+    const inputs = Array.from(childForm.querySelectorAll('.popup__input'));
+    const button = childForm.querySelector('.popup__submit-button');
+    toggleButtonState(inputs, button);
+  }
   popupElement.classList.add('popup_opened');
 }
 
@@ -135,11 +115,22 @@ initialCards.forEach((cardData) => {
   renderCard(cardData);
 });
 
-// вешаем обработчики событий
+// вешаем обработчики событий ...
+// ... на кнопки
 editButton.addEventListener('click', () => showPopup(editPopup));
 editButton.addEventListener('click', renderEditPopup);
 addButton.addEventListener('click', () => showPopup(addPopup));
 hidePopupButtons.forEach((btn) => btn.addEventListener('click', hidePopup));
+// ... на оверлей
+popups.forEach((popupElement) => {
+  popupElement.addEventListener('click', (event) => {
+    if (event.target.classList.contains('popup_opened')) {
+      hidePopup(event);
+    }
+    // event.stopPropagation();
+  })
+});
+// ... на формы
 editForm.addEventListener('submit', editProfile);
 addForm.addEventListener('submit', function (event) {
   event.preventDefault();
@@ -149,6 +140,6 @@ addForm.addEventListener('submit', function (event) {
 
   renderCard(cardData);
 
-  addForm.reset();
+  // addForm.reset();
   hidePopup(event);
 });
