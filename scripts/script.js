@@ -28,7 +28,7 @@ const fullPicture = picturePopup.querySelector('.popup__picture');
 const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption');
 
 // функции-обработчики
-// открытие попапа (а также сброс форм, переключение состояния кнопки и закрытие по нажатию на Escape)
+// открытие попапа (а также сброс форм и переключение состояния кнопки)
 function showPopup(popupElement) {
   const childForm = popupElement.querySelector('.popup__form');
   if (childForm) {
@@ -39,9 +39,7 @@ function showPopup(popupElement) {
   }
   popupElement.classList.add('popup_opened');
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') hidePopup(popupElement);
-  })
+  document.addEventListener('keydown', hidePopupByEsc);
 }
 
 // заполнение полей редактирующей формы
@@ -53,10 +51,14 @@ function renderEditPopup () {
 // закрытие попапа
 function hidePopup(popupElement) {
   popupElement.classList.remove('popup_opened');
-  document.removeEventListener('keydown', (event) => {
-    if (event.key === 'Escape') hidePopup(popupElement);
-  })
+  document.removeEventListener('keydown', hidePopupByEsc);
 }
+
+// закрытие попапа по нажатию на Escape
+function hidePopupByEsc (event) {
+  const openedPopup = document.querySelector('.popup_opened');
+  if (event.key === 'Escape') hidePopup(openedPopup);
+};
 
 // редактирование имени и описания
 function editProfile(event) {
