@@ -11,7 +11,9 @@ const popups = document.querySelectorAll('.popup');
 const editPopup = document.querySelector('.popup_edit');
 const addPopup = document.querySelector('.popup_add');
 const picturePopup = document.querySelector('.popup_picture');
-const hidePopupButtons = document.querySelectorAll('.popup__close-button');
+const hideEditPopupButton = editPopup.querySelector('.popup__close-button_type_edit');
+const hideAddPopupButton = addPopup.querySelector('.popup__close-button_type_add');
+const hidePicPopupButton = picturePopup.querySelector('.popup__close-button_type_pic');
 
 // формы и поля ввода
 const editForm = editPopup.querySelector('.popup__form_type_edit');
@@ -26,7 +28,7 @@ const fullPicture = picturePopup.querySelector('.popup__picture');
 const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption');
 
 // функции-обработчики
-// открытие попапа
+// открытие попапа (а также сброс форм, переключение состояния кнопки и закрытие по нажатию на Escape)
 function showPopup(popupElement) {
   const childForm = popupElement.querySelector('.popup__form');
   if (childForm) {
@@ -36,6 +38,10 @@ function showPopup(popupElement) {
     toggleButtonState(inputs, button);
   }
   popupElement.classList.add('popup_opened');
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') hidePopup(popupElement);
+  })
 }
 
 // заполнение полей редактирующей формы
@@ -45,9 +51,11 @@ function renderEditPopup () {
 }
 
 // закрытие попапа
-function hidePopup(event) {
-  const popup = event.target.closest('.popup');
-  popup.classList.remove('popup_opened');
+function hidePopup(popupElement) {
+  popupElement.classList.remove('popup_opened');
+  document.removeEventListener('keydown', (event) => {
+    if (event.key === 'Escape') hidePopup(popupElement);
+  })
 }
 
 // редактирование имени и описания
@@ -55,7 +63,7 @@ function editProfile(event) {
   event.preventDefault();
   userName.textContent = nameField.value;
   userBio.textContent = bioField.value;
-  hidePopup(event);
+  hidePopup(editPopup);
 }
 
 // генерирование, заполнение и добавление карточки на страницу
@@ -120,12 +128,14 @@ initialCards.forEach((cardData) => {
 editButton.addEventListener('click', () => showPopup(editPopup));
 editButton.addEventListener('click', renderEditPopup);
 addButton.addEventListener('click', () => showPopup(addPopup));
-hidePopupButtons.forEach((btn) => btn.addEventListener('click', hidePopup));
+hideEditPopupButton.addEventListener('click', () => hidePopup(editPopup));
+hideAddPopupButton.addEventListener('click', () => hidePopup(addPopup));
+hidePicPopupButton.addEventListener('click', () => hidePopup(picturePopup));
 // ... на оверлей
 popups.forEach((popupElement) => {
   popupElement.addEventListener('click', (event) => {
     if (event.target.classList.contains('popup_opened')) {
-      hidePopup(event);
+      hidePopup(event.target);
     }
     // event.stopPropagation();
   })
@@ -139,7 +149,5 @@ addForm.addEventListener('submit', function (event) {
   cardData.link = linkField.value;
 
   renderCard(cardData);
-
-  // addForm.reset();
-  hidePopup(event);
+  hidePopup(addPopup);
 });
