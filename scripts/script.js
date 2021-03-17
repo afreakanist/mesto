@@ -17,11 +17,11 @@ const hidePicPopupButton = picturePopup.querySelector('.popup__close-button_type
 
 // формы и поля ввода
 const editForm = editPopup.querySelector('.popup__form_type_edit');
-const nameField = editPopup.querySelector('#popup__input_type_name');
-const bioField = editPopup.querySelector('#popup__input_type_bio');
+const nameField = editPopup.querySelector('#name');
+const bioField = editPopup.querySelector('#bio');
 const addForm = addPopup.querySelector('.popup__form_type_add');
-const captionField = addPopup.querySelector('#popup__input_type_caption');
-const linkField = addPopup.querySelector('#popup__input_type_link');
+const captionField = addPopup.querySelector('#caption');
+const linkField = addPopup.querySelector('#link');
 
 // развёрнутая картинка с подписью
 const fullPicture = picturePopup.querySelector('.popup__picture');
