@@ -35,7 +35,7 @@ function showPopup(popupElement) {
     childForm.reset();
     const inputs = Array.from(childForm.querySelectorAll('.popup__input'));
     const button = childForm.querySelector('.popup__submit-button');
-    toggleButtonState(inputs, button);
+    toggleButtonState(selectorSet, inputs, button);
   }
   popupElement.classList.add('popup_opened');
 
