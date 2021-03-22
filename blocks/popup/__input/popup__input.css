@@ -4,10 +4,11 @@
   line-height: 17px;
   letter-spacing: 0em;
   text-align: left;
+  outline: none;
   border: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   width: 358px;
-  padding: 0;
+  padding: 0 0 10px;
   margin-bottom: 30px;
 }
 
