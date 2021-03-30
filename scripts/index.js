@@ -1,3 +1,7 @@
+import Card from './Card.js';
+import FormValidator from './FormValidator.js';
+import { initialCards, configSet } from './data.js';
+
 // кнопки редактирования профиля и добавления карточек
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
@@ -7,15 +11,13 @@ const userName = document.querySelector('.profile__name');
 const userBio = document.querySelector('.profile__description');
 
 // попапы и кнопки закрытия попапа
-const popups = document.querySelectorAll('.popup');
 const editPopup = document.querySelector('.popup_edit');
 const addPopup = document.querySelector('.popup_add');
-const picturePopup = document.querySelector('.popup_picture');
 const hideEditPopupButton = editPopup.querySelector('.popup__close-button_type_edit');
 const hideAddPopupButton = addPopup.querySelector('.popup__close-button_type_add');
-const hidePicPopupButton = picturePopup.querySelector('.popup__close-button_type_pic');
 
 // формы и поля ввода
+const formList = document.querySelectorAll('.popup__form');
 const editForm = editPopup.querySelector('.popup__form_type_edit');
 const nameField = editPopup.querySelector('#name');
 const bioField = editPopup.querySelector('#bio');
@@ -23,23 +25,18 @@ const addForm = addPopup.querySelector('.popup__form_type_add');
 const captionField = addPopup.querySelector('#caption');
 const linkField = addPopup.querySelector('#link');
 
-// развёрнутая картинка с подписью
-const fullPicture = picturePopup.querySelector('.popup__picture');
-const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption');
-
 // функции-обработчики
 // открытие попапа (а также сброс форм и переключение состояния кнопки)
 function showPopup(popupElement) {
-  const childForm = popupElement.querySelector('.popup__form');
-  if (childForm) {
-    childForm.reset();
-    const inputs = Array.from(childForm.querySelectorAll('.popup__input'));
-    const button = childForm.querySelector('.popup__submit-button');
-    toggleButtonState(selectorSet, inputs, button);
+  const formElement = popupElement.querySelector('.popup__form');
+  if (formElement) {
+    formElement.reset();
+    new FormValidator(configSet, formElement).enableValidation();
   }
-  popupElement.classList.add('popup_opened');
 
-  document.addEventListener('keydown', hidePopupByEsc);
+  popupElement.classList.add('popup_opened');
+  popupElement.addEventListener('click', handleOverlay);
+  document.addEventListener('keydown', handleEsc);
 }
 
 // заполнение полей редактирующей формы
@@ -51,15 +48,21 @@ function renderEditPopup () {
 // закрытие попапа
 function hidePopup(popupElement) {
   popupElement.classList.remove('popup_opened');
-  document.removeEventListener('keydown', hidePopupByEsc);
+  popupElement.removeEventListener('click', handleOverlay);
+  document.removeEventListener('keydown', handleEsc);
   hideErrors(popupElement);
 }
 
 // закрытие попапа по нажатию на Escape
-function hidePopupByEsc (event) {
+function handleEsc (event) {
   const openedPopup = document.querySelector('.popup_opened');
   if (event.key === 'Escape') hidePopup(openedPopup);
 };
+
+// закрытие попапа по нажатию на оверлей
+function handleOverlay (event) {
+  if (event.target.classList.contains('popup_opened')) hidePopup(event.target);
+}
 
 // скрытие/удаление ошибок при закрытии попапа
 function hideErrors(popupElement) {
@@ -79,54 +82,10 @@ function editProfile(event) {
   hidePopup(editPopup);
 }
 
-// генерирование, заполнение и добавление карточки на страницу
-function getCard(cardData) {
-  const cardTemplate = document.querySelector('#element-template').content;
-  const cardElement = cardTemplate.querySelector('.element').cloneNode(true);
-
-  const cardPicture = cardElement.querySelector('.element__picture');
-  const cardCaption = cardElement.querySelector('.element__description');
-  cardPicture.src = cardData.link;
-  cardCaption.textContent = cardData.name;
-  cardPicture.alt = cardCaption.textContent;
-
-  cardElement.querySelector('.element__like-button').addEventListener('click', likeCard);
-  cardElement.querySelector('.element__delete-button').addEventListener('click', deleteCard);
-  cardPicture.addEventListener('click', showFullPicture);
-
-  return cardElement;
-}
-
-// удаление карточки
-function deleteCard(event) {
-  const target = event.target;
-  const parentCard = target.closest('.element');
-  parentCard.remove();
-}
-
-// проставление лайков
-function likeCard(event) {
-  const target = event.target;
-  target.classList.toggle('element__like-button_active');
-}
-
-// открытие попапа с полной картинкой и подписью
-function showFullPicture(event) {
-  showPopup(picturePopup);
-
-  const target = event.target;
-  const parentCard = target.closest('.element');
-  const cardPicture = parentCard.querySelector('.element__picture');
-  const cardCaption = parentCard.querySelector('.element__description');
-
-  fullPicture.src = cardPicture.src;
-  fullPictureCaption.textContent = cardCaption.textContent;
-  fullPicture.alt = fullPictureCaption.textContent;
-}
-
-// заполнение карточки данными
+// сборка и добавление карточки на страницу
 function renderCard(cardData) {
-  const cardElement = getCard(cardData);
+  const templateSelector = '#element-template';
+  const cardElement = new Card(cardData, templateSelector, showPopup, hidePopup).getCard();
   const cards = document.querySelector('.elements__list');
   cards.prepend(cardElement);
 }
@@ -136,6 +95,11 @@ initialCards.forEach((cardData) => {
   renderCard(cardData);
 });
 
+// активируем валидацию форм
+formList.forEach((formElement) => {
+  new FormValidator(configSet, formElement).enableValidation();
+})
+
 // вешаем обработчики событий ...
 // ... на кнопки
 editButton.addEventListener('click', () => showPopup(editPopup));
@@ -143,16 +107,6 @@ editButton.addEventListener('click', renderEditPopup);
 addButton.addEventListener('click', () => showPopup(addPopup));
 hideEditPopupButton.addEventListener('click', () => hidePopup(editPopup));
 hideAddPopupButton.addEventListener('click', () => hidePopup(addPopup));
-hidePicPopupButton.addEventListener('click', () => hidePopup(picturePopup));
-// ... на оверлей
-popups.forEach((popupElement) => {
-  popupElement.addEventListener('click', (event) => {
-    if (event.target.classList.contains('popup_opened')) {
-      hidePopup(event.target);
-    }
-    // event.stopPropagation();
-  })
-});
 // ... на формы
 editForm.addEventListener('submit', editProfile);
 addForm.addEventListener('submit', function (event) {
