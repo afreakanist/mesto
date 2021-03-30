@@ -17,7 +17,6 @@ const hideEditPopupButton = editPopup.querySelector('.popup__close-button_type_e
 const hideAddPopupButton = addPopup.querySelector('.popup__close-button_type_add');
 
 // формы и поля ввода
-const formList = document.querySelectorAll('.popup__form');
 const editForm = editPopup.querySelector('.popup__form_type_edit');
 const nameField = editPopup.querySelector('#name');
 const bioField = editPopup.querySelector('#bio');
