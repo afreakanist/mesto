@@ -52,6 +52,7 @@ function renderEditPopup () {
 function hidePopup(popupElement) {
   popupElement.classList.remove('popup_opened');
   document.removeEventListener('keydown', hidePopupByEsc);
+  hideErrors(popupElement);
 }
 
 // закрытие попапа по нажатию на Escape
@@ -59,6 +60,16 @@ function hidePopupByEsc (event) {
   const openedPopup = document.querySelector('.popup_opened');
   if (event.key === 'Escape') hidePopup(openedPopup);
 };
+
+// скрытие/удаление ошибок при закрытии попапа
+function hideErrors(popupElement) {
+  if (popupElement.querySelector('.popup__form')) {
+    const activeErrors = popupElement.querySelectorAll('.popup__error_active');
+    const invalidInputs = popupElement.querySelectorAll('.popup__input_type_error');
+    activeErrors.forEach((el) => el.classList.remove('popup__error_active'));
+    invalidInputs.forEach((el) => el.classList.remove('popup__input_type_error'));
+  }
+}
 
 // редактирование имени и описания
 function editProfile(event) {
