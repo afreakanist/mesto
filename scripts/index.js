@@ -95,11 +95,6 @@ initialCards.forEach((cardData) => {
   renderCard(cardData);
 });
 
-// активируем валидацию форм
-formList.forEach((formElement) => {
-  new FormValidator(configSet, formElement).enableValidation();
-})
-
 // вешаем обработчики событий ...
 // ... на кнопки
 editButton.addEventListener('click', () => showPopup(editPopup));
