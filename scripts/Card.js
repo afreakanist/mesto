@@ -37,16 +37,8 @@ export default class Card {
 
     const picturePopup = document.querySelector('.popup_picture');
     const cardPicture = this._cardElement.querySelector('.element__picture');
-    cardPicture.addEventListener('click', () => {
-      const fullPicture = picturePopup.querySelector('.popup__picture');
-      const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption');
-      this._showPopup(picturePopup);
-
-      const cardCaption = this._cardElement.querySelector('.element__description');
-      fullPicture.src = cardPicture.src;
-      fullPictureCaption.textContent = cardCaption.textContent;
-      fullPicture.alt = fullPictureCaption.textContent;
-    });
+    const cardCaption = this._cardElement.querySelector('.element__description');
+    cardPicture.addEventListener('click', () => this._showPopup(picturePopup, cardPicture, cardCaption));
 
     const hidePopupButton = document.querySelector('.popup__close-button_type_pic');
     hidePopupButton.addEventListener('click', () => this._hidePopup(picturePopup));

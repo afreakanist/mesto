@@ -10,13 +10,22 @@ const addButton = document.querySelector('.profile__add-button');
 const userName = document.querySelector('.profile__name');
 const userBio = document.querySelector('.profile__description');
 
+// контейнер с карточками
+const cardContainer = document.querySelector('.elements__list');
+
 // попапы и кнопки закрытия попапа
 const editPopup = document.querySelector('.popup_edit');
 const addPopup = document.querySelector('.popup_add');
+const picturePopup = document.querySelector('.popup_picture');
 const hideEditPopupButton = editPopup.querySelector('.popup__close-button_type_edit');
 const hideAddPopupButton = addPopup.querySelector('.popup__close-button_type_add');
 
+// полноразмерная картинка в попапе и подпись
+const fullPicture = picturePopup.querySelector('.popup__picture');
+const fullPictureCaption = picturePopup.querySelector('.popup__picture-caption');
+
 // формы и поля ввода
+const formList = document.querySelectorAll('.popup__form');
 const editForm = editPopup.querySelector('.popup__form_type_edit');
 const nameField = editPopup.querySelector('#name');
 const bioField = editPopup.querySelector('#bio');
@@ -27,15 +36,28 @@ const linkField = addPopup.querySelector('#link');
 // функции-обработчики
 // открытие попапа (а также сброс форм и переключение состояния кнопки)
 function showPopup(popupElement) {
-  const formElement = popupElement.querySelector('.popup__form');
-  if (formElement) {
-    formElement.reset();
-    new FormValidator(configSet, formElement).enableValidation();
-  }
-
   popupElement.classList.add('popup_opened');
   popupElement.addEventListener('click', handleOverlay);
   document.addEventListener('keydown', handleEsc);
+}
+
+// открытие попапа с формой
+function showFormPopup(popupElement) {
+  showPopup(popupElement);
+
+  const formElement = popupElement.querySelector(configSet.formSelector);
+  const submitButton = formElement.querySelector(configSet.submitButtonSelector);
+  formElement.reset();
+  submitButton.classList.add(configSet.inactiveButtonClass);
+  submitButton.setAttribute('disabled', 'disabled');
+}
+
+function showPicturePopup(popupElement, cardPicture, cardCaption) {
+  showPopup(popupElement);
+
+  fullPicture.src = cardPicture.src;
+  fullPictureCaption.textContent = cardCaption.textContent;
+  fullPicture.alt = fullPictureCaption.textContent;
 }
 
 // заполнение полей редактирующей формы
@@ -84,26 +106,12 @@ function editProfile(event) {
 // сборка и добавление карточки на страницу
 function renderCard(cardData) {
   const templateSelector = '#element-template';
-  const cardElement = new Card(cardData, templateSelector, showPopup, hidePopup).getCard();
-  const cards = document.querySelector('.elements__list');
-  cards.prepend(cardElement);
+  const cardElement = new Card(cardData, templateSelector, showPicturePopup, hidePopup).getCard();
+  cardContainer.prepend(cardElement);
 }
 
-// добавляем на страницу набор карточек "из коробки"
-initialCards.forEach((cardData) => {
-  renderCard(cardData);
-});
-
-// вешаем обработчики событий ...
-// ... на кнопки
-editButton.addEventListener('click', () => showPopup(editPopup));
-editButton.addEventListener('click', renderEditPopup);
-addButton.addEventListener('click', () => showPopup(addPopup));
-hideEditPopupButton.addEventListener('click', () => hidePopup(editPopup));
-hideAddPopupButton.addEventListener('click', () => hidePopup(addPopup));
-// ... на формы
-editForm.addEventListener('submit', editProfile);
-addForm.addEventListener('submit', function (event) {
+// обработчик сабмита формы добавления карточки
+function handleAddFormSubmit(event) {
   event.preventDefault();
   const cardData = {};
   cardData.name = captionField.value;
@@ -111,4 +119,25 @@ addForm.addEventListener('submit', function (event) {
 
   renderCard(cardData);
   hidePopup(addPopup);
+}
+
+// добавляем на страницу набор карточек "из коробки"
+initialCards.forEach((cardData) => {
+  renderCard(cardData);
 });
+
+// активируем валидацию
+formList.forEach((formElement) => {
+  new FormValidator(configSet, formElement).enableValidation();
+})
+
+// вешаем обработчики событий ...
+// ... на кнопки
+editButton.addEventListener('click', () => showFormPopup(editPopup));
+editButton.addEventListener('click', renderEditPopup);
+addButton.addEventListener('click', () => showFormPopup(addPopup));
+hideEditPopupButton.addEventListener('click', () => hidePopup(editPopup));
+hideAddPopupButton.addEventListener('click', () => hidePopup(addPopup));
+// ... на формы
+editForm.addEventListener('submit', editProfile);
+addForm.addEventListener('submit', handleAddFormSubmit);
