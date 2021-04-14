@@ -54,6 +54,19 @@ export default class FormValidator {
     })
   }
 
+  resetErrors() {
+    const activeErrors = this._formElement.querySelectorAll(`.${this._configSet.errorClass}`);
+    const invalidInputs = this._formElement.querySelectorAll(`.${this._configSet.inputErrorClass}`);
+    activeErrors.forEach((el) => el.classList.remove(this._configSet.errorClass));
+    invalidInputs.forEach((el) => el.classList.remove(this._configSet.inputErrorClass));
+  }
+
+  resetButtonState() {
+    const button = this._formElement.querySelector(this._configSet.submitButtonSelector);
+    button.classList.add(this._configSet.inactiveButtonClass);
+    button.setAttribute('disabled', 'disabled');
+  }
+
   enableValidation() {
     this._setEventListeners();
   }

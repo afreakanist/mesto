@@ -1,10 +1,9 @@
 export default class Card {
-  constructor(cardData, templateSelector, showPopup, hidePopup) {
-    this._name = cardData.name;
+  constructor(cardData, templateSelector, handleCardClick) {
+    this._caption = cardData.caption;
     this._link = cardData.link;
     this._templateSelector = templateSelector;
-    this._showPopup = showPopup;
-    this._hidePopup = hidePopup;
+    this._handleCardClick = handleCardClick;
   }
 
   _getCardTemplate() {
@@ -22,8 +21,8 @@ export default class Card {
     this._setEventListeners();
 
     this._cardElement.querySelector('.element__picture').src = this._link;
-    this._cardElement.querySelector('.element__picture').alt = this._name;
-    this._cardElement.querySelector('.element__description').textContent = this._name;
+    this._cardElement.querySelector('.element__picture').alt = this._caption;
+    this._cardElement.querySelector('.element__description').textContent = this._caption;
 
     return this._cardElement;
   }
@@ -35,13 +34,12 @@ export default class Card {
     const deleteButton = this._cardElement.querySelector('.element__delete-button');
     deleteButton.addEventListener('click', () => this._cardElement.remove());
 
-    const picturePopup = document.querySelector('.popup_picture');
     const cardPicture = this._cardElement.querySelector('.element__picture');
     const cardCaption = this._cardElement.querySelector('.element__description');
-    cardPicture.addEventListener('click', () => this._showPopup(picturePopup, cardPicture, cardCaption));
-
-    const hidePopupButton = document.querySelector('.popup__close-button_type_pic');
-    hidePopupButton.addEventListener('click', () => this._hidePopup(picturePopup));
+    cardPicture.addEventListener('click', () => {
+      this._handleCardClick.show(cardPicture, cardCaption)
+      this._handleCardClick.setEventListeners();
+    });
   }
 
   getCard() {
