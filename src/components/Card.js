@@ -18,12 +18,14 @@ export default class Card {
 
   _generateCardElement() {
     this._cardElement = this._getCardTemplate();
+
+    this._cardPicture = this._cardElement.querySelector('.element__picture');
+    this._cardCaption = this._cardElement.querySelector('.element__description');
+    this._cardPicture.src = this._link;
+    this._cardPicture.alt = this._caption;
+    this._cardCaption.textContent = this._caption;
+
     this._setEventListeners();
-
-    this._cardElement.querySelector('.element__picture').src = this._link;
-    this._cardElement.querySelector('.element__picture').alt = this._caption;
-    this._cardElement.querySelector('.element__description').textContent = this._caption;
-
     return this._cardElement;
   }
 
@@ -34,11 +36,8 @@ export default class Card {
     const deleteButton = this._cardElement.querySelector('.element__delete-button');
     deleteButton.addEventListener('click', () => this._cardElement.remove());
 
-    const cardPicture = this._cardElement.querySelector('.element__picture');
-    const cardCaption = this._cardElement.querySelector('.element__description');
-    cardPicture.addEventListener('click', () => {
-      this._handleCardClick.show(cardPicture, cardCaption)
-      this._handleCardClick.setEventListeners();
+    this._cardPicture.addEventListener('click', () => {
+      this._handleCardClick.show(this._cardPicture, this._cardCaption);
     });
   }
 

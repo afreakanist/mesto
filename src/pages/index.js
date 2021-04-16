@@ -1,14 +1,14 @@
-import './pages/index.css';
-import Card from './components/Card.js';
-import FormValidator from './components/FormValidator.js';
-import PopupWithForm from './components/PopupWithForm.js';
-import PopupWithImage from './components/PopupWithImage.js';
-import Section from './components/Section.js';
-import UserInfo from './components/UserInfo.js';
-import { initialCards, configSet, templateSelector,
-  cardContainerSelector, editPopupSelector, addPopupSelector,
-  picturePopupSelector, editButton, addButton, formList,
-  editForm, nameField, bioField, addForm, userName as username, userBio as bio } from './utils/constants.js';
+import './index.css';
+import Card from '../components/Card.js';
+import FormValidator from '../components/FormValidator.js';
+import PopupWithForm from '../components/PopupWithForm.js';
+import PopupWithImage from '../components/PopupWithImage.js';
+import Section from '../components/Section.js';
+import UserInfo from '../components/UserInfo.js';
+import { initialCards, configSet, templateSelector, cardContainerSelector,
+  editPopupSelector, addPopupSelector, picturePopupSelector,
+  editButton, addButton, editForm, nameField, bioField, addForm,
+  userName as username, userBio as bio } from '../utils/constants.js';
 
   // информация пользователя
 const userInfo = new UserInfo({ username, bio });
@@ -22,6 +22,11 @@ const addCardPopup = new PopupWithForm(addPopupSelector, handleAddFormSubmit);
 const editFormValidator = new FormValidator(configSet, editForm);
 const addFormValidator = new FormValidator(configSet, addForm);
 
+// функция создания экземпляра карточки
+function createCard(cardData) {
+  return new Card(cardData, templateSelector, picturePopup).getCard();
+}
+
 // колбэки сабмита ...
 // ... формы редактирования профиля
 function handleEditFormSubmit(userData) {
@@ -31,7 +36,7 @@ function handleEditFormSubmit(userData) {
 
 // ... формы добавления карточки
 function handleAddFormSubmit(cardData) {
-  const newCard = new Card(cardData, templateSelector, picturePopup).getCard();
+  const newCard = createCard(cardData);
   cardContainer.addItem(newCard);
   addCardPopup.hide();
 }
@@ -40,22 +45,25 @@ function handleAddFormSubmit(cardData) {
 const cardContainer = new Section({
   items: initialCards,
   renderer: (cardData) => {
-    const cardElement = new Card(cardData, templateSelector, picturePopup).getCard();
+    const cardElement = createCard(cardData);
     cardContainer.addItem(cardElement);
   }
 }, cardContainerSelector);
 
 cardContainer.renderItems();
 
-// активируем валидацию
-formList.forEach((formElement) => {
-  new FormValidator(configSet, formElement).enableValidation();
-})
+// активируем валидацию форм
+editFormValidator.enableValidation();
+addFormValidator.enableValidation();
 
-// вешаем обработчики событий на кнопки
+// вешаем обработчики событий...
+// ... на попапы
+editProfilePopup.setEventListeners();
+addCardPopup.setEventListeners();
+picturePopup.setEventListeners();
+// ... на кнопки
 editButton.addEventListener('click', () => {
   editProfilePopup.show();
-  editProfilePopup.setEventListeners();
   const userData = userInfo.getUserInfo();
   nameField.value = userData.username;
   bioField.value = userData.bio;
@@ -64,7 +72,6 @@ editButton.addEventListener('click', () => {
 });
 addButton.addEventListener('click', () => {
   addCardPopup.show();
-  addCardPopup.setEventListeners();
   addFormValidator.resetButtonState();
   addFormValidator.resetErrors();
 });
