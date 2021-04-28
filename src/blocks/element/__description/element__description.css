@@ -1,5 +1,5 @@
 .element__description {
-  margin: 25px auto 25px 21px;
+  margin: 25px 0 25px 21px;
   color: black;
   font-size: 24px;
   font-weight: 900;
@@ -9,6 +9,5 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 11ch;
-  /* margin: 0; align-self: center; */
+  max-width: 12ch;
 }

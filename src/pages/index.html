@@ -15,7 +15,9 @@
     </header>
     <main class="content">
       <section class="profile">
-        <img src="<%=require('../images/profile-pic.jpg')%>" alt="Аватар" class="profile__avatar">
+        <div class="profile__avatar-overlay">
+          <img src="<%=require('../images/profile-pic.jpg')%>" alt="Аватар" class="profile__avatar">
+        </div>
         <div class="profile__info">
           <div class="profile__row">
             <h1 class="profile__name">Имя пользователя</h1>
@@ -38,7 +40,7 @@
 
   <div class="popup popup_edit">
     <div class="popup__container">
-      <button type="button" aria-label="Закрыть окно" class="popup__close-button popup__close-button_type_edit button"></button>
+      <button type="button" aria-label="Закрыть окно" class="popup__close-button button"></button>
       <h2 class="popup__title">Редактировать профиль</h2>
       <form class="popup__form popup__form_type_edit" name="edit" novalidate>
         <label for="name" class="popup__field">
@@ -56,7 +58,7 @@
 
   <div class="popup popup_add">
     <div class="popup__container">
-      <button type="button" aria-label="Закрыть окно" class="popup__close-button popup__close-button_type_add button"></button>
+      <button type="button" aria-label="Закрыть окно" class="popup__close-button button"></button>
       <h2 class="popup__title">Новое место</h2>
       <form class="popup__form popup__form_type_add" name="add" novalidate>
         <label for="caption" class="popup__field">
@@ -64,7 +66,7 @@
           <span class="popup__error caption-error"></span>
         </label>
         <label for="link" class="popup__field">
-          <input type="url" placeholder="Ссылка на картинку" class="popup__input" id="link" name="link" required>
+          <input type="url" placeholder="Ссылка на изображение" class="popup__input" id="link" name="link" required>
           <span class="popup__error link-error"></span>
         </label>
         <button type="submit" class="popup__submit-button">Создать</button>
@@ -74,10 +76,34 @@
 
   <div class="popup popup_picture">
     <figure class="popup__figure">
-      <button type="button" aria-label="Закрыть окно" class="popup__close-button popup__close-button_type_pic button"></button>
+      <button type="button" aria-label="Закрыть окно" class="popup__close-button button"></button>
       <img src="#" alt="Картинка" class="popup__picture">
       <figcaption class="popup__picture-caption"></figcaption>
     </figure>
+  </div>
+
+  <div class="popup popup_avatar-update">
+    <div class="popup__container">
+      <button type="button" aria-label="Закрыть окно" class="popup__close-button button"></button>
+      <h2 class="popup__title">Обновить аватар</h2>
+      <form class="popup__form popup__form_type_avatar-update" name="add" novalidate>
+        <label for="avatar" class="popup__field">
+          <input type="url" placeholder="Ссылка на изображение" class="popup__input" id="avatar" name="avatar" required>
+          <span class="popup__error avatar-error"></span>
+        </label>
+        <button type="submit" class="popup__submit-button">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="popup popup_confirm">
+    <div class="popup__container">
+      <button type="button" aria-label="Закрыть окно" class="popup__close-button button"></button>
+      <h2 class="popup__title">Вы уверены?</h2>
+      <form class="popup__form popup__form_type_confirm" name="add" novalidate>
+        <button type="submit" class="popup__submit-button">Да</button>
+      </form>
+    </div>
   </div>
 
   <template id="element-template">
@@ -86,7 +112,10 @@
       <button type="button" aria-label="Удалить" class="element__delete-button button"></button>
       <div class="element__info">
         <h2 class="element__description"></h2>
-        <button type="button" aria-label="Нравится" class="element__like-button"></button>
+        <div class="element__like-group">
+          <button type="button" aria-label="Нравится" class="element__like-button"></button>
+          <p class="element__like-count">0</p>
+        </div>
       </div>
     </li>
   </template>
