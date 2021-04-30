@@ -6,17 +6,16 @@ export default class PopupWithConfirmButton extends Popup {
     this._button = this._popup.querySelector('.popup__submit-button');
   }
 
-  getArguments(id, element) {
-    this._id = id;
-    this._element = element;
+  setArguments(card) {
+    this._card = card;
   }
 
   setEventListeners() {
     super.setEventListeners();
     this._button.addEventListener('click', () => {
-      this._submitHandler(this._id)
+      this._submitHandler(this._card._id)
         .then(() => {
-          this._element.remove();
+          this._card.deleteCard();
           this.hide();
         })
         .catch(error => console.log(error));

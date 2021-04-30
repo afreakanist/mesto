@@ -29,75 +29,89 @@ const userInfo = new UserInfo({ name: userName, about: userBio, avatar: userAvat
 // экземпляры попапов
 const picturePopup = new PopupWithImage(picturePopupSelector);
 const editProfilePopup = new PopupWithForm(editPopupSelector, handleEditFormSubmit);
-const addCardPopup = new PopupWithForm(addPopupSelector, handleAddFormSubmit);
 const updateAvatarPopup = new PopupWithForm(updateAvatarPopupSelector, handleAvatarSubmit);
 const confirmPopup = new PopupWithConfirmButton(confirmPopupSelector, api.deleteCard);
 
-//экземпляры валидаторов
+// экземпляры валидаторов
 const editFormValidator = new FormValidator(configSet, editForm);
 const addFormValidator = new FormValidator(configSet, addForm);
 const updateAvatarFormValidator = new FormValidator(configSet, updateForm);
-
-// функция создания экземпляра карточки
-function createCard(cardData) {
-  return new Card(cardData, templateSelector, picturePopup, confirmPopup, api).getCard();
-}
 
 // колбэки сабмита ...
 // ... формы редактирования профиля
 function handleEditFormSubmit(userData) {
   api.editUserInfo(userData)
-    .then(data => userInfo.setUserInfo(data))
+    .then(data => {
+      userInfo.setUserInfo(data);
+      editProfilePopup.hide();
+    })
     .catch(error => console.log(error))
     .finally(() => {
       editProfilePopup.renderLoading(false);
     });
-  editProfilePopup.hide();
-}
-
-// ... формы добавления карточки
-function handleAddFormSubmit(cardData) {
-  api.postNewCard(cardData)
-    .then(data => {
-    const newCard = createCard(data);
-    cardContainer.addItem(newCard);
-    })
-    .catch(error => console.log(error))
-    .finally(() => {
-      addCardPopup.renderLoading(false);
-    });
-  addCardPopup.hide();
 }
 
 // ... формы обновления аватара
 function handleAvatarSubmit({avatar}) {
   api.updateAvatar(avatar)
-    .then(data => userAvatar.src = data.avatar)
+    .then(data => {
+      userAvatar.src = data.avatar;
+      updateAvatarPopup.hide();
+    })
     .catch(error => console.log(error))
     .finally(() => {
       updateAvatarPopup.renderLoading(false);
     });
-  updateAvatarPopup.hide();
 }
 
-// отображаем информацию пользователя при загрузке
-api.getUserInfo()
-  .then(data => {
-    userInfo.setUserInfo(data);
-    userInfo.updateAvatar(data);
+// получаем данные при загрузке, затем отрисовываем профиль и карточки
+Promise.all([
+  api.getUserInfo(),
+  api.getInitialCards()
+])
+  .then(([userData, cardsData]) => {
+    userInfo.setUserInfo(userData);
+    userInfo.updateAvatar(userData);
+
+    // функция создания экземпляра карточки
+    function createCard(cardData) {
+      return new Card({ userData, ...cardData }, templateSelector, picturePopup, confirmPopup, api).getCard();
+    };
+
+    // ... формы добавления карточки
+    function handleAddFormSubmit(cardData) {
+      api.postNewCard(cardData)
+        .then(data => {
+        const newCard = createCard(data);
+        cardContainer.addItem(newCard);
+        addCardPopup.hide();
+        })
+        .catch(error => console.log(error))
+        .finally(() => {
+          addCardPopup.renderLoading(false);
+        });
+    };
+
+    // контейнер с карточками
+    const cardContainer = new Section((cardData) => {
+      const cardElement = createCard(cardData);
+      cardContainer.addItem(cardElement);
+    }, cardContainerSelector);
+
+    // отрисовываем карточки
+    cardContainer.renderItems(cardsData);
+
+    // экземпляр попапа добавления карточки
+    const addCardPopup = new PopupWithForm(addPopupSelector, handleAddFormSubmit);
+    // вешаем связанные слушатели
+    addCardPopup.setEventListeners();
+    addButton.addEventListener('click', () => {
+      addCardPopup.show();
+      addFormValidator.resetButtonState();
+      addFormValidator.resetErrors();
+    });
   })
   .catch(error => console.log(error));
-
-// добавляем в контейнер карточки с сервера при загрузке
-const cardContainer = new Section({
-  items: api.getInitialCards(),
-  renderer: (cardData) => {
-    const cardElement = createCard(cardData);
-    cardContainer.addItem(cardElement);
-  }
-}, cardContainerSelector);
-
-cardContainer.renderItems();
 
 // активируем валидацию форм
 editFormValidator.enableValidation();
@@ -107,7 +121,6 @@ updateAvatarFormValidator.enableValidation();
 // вешаем обработчики событий...
 // ... на попапы
 editProfilePopup.setEventListeners();
-addCardPopup.setEventListeners();
 updateAvatarPopup.setEventListeners();
 picturePopup.setEventListeners();
 confirmPopup.setEventListeners();
@@ -125,9 +138,4 @@ editButton.addEventListener('click', () => {
   bioField.value = userData.about;
   editFormValidator.resetButtonState();
   editFormValidator.resetErrors();
-});
-addButton.addEventListener('click', () => {
-  addCardPopup.show();
-  addFormValidator.resetButtonState();
-  addFormValidator.resetErrors();
 });
